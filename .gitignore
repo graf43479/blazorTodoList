@@ -1,0 +1,37 @@
+bin
+obj
+*.sln.DotSettings.user
+*.csproj.user
+
+
+# Visual Studio 2015 cache/options directory
+.vs/
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# Cake - Uncomment if you are using it
+# tools/
+*.pdf
+.typingsrc
+Software/HonestSignService/HonestSignUIWeb/ClientApp/**/*.js.map
+
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+packages
+**/packages/*
+
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+
+# Uncomment if necessary however generally it will be regenerated when needed
+#!**/packages/repositories.config
+# NuGet v3's project.json files produces more ignoreable files
+*.nuget.props
+*.nuget.targets
+
+
+*.bak
+.config
