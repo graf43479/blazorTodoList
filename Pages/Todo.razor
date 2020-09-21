@@ -1,0 +1,76 @@
+﻿@*<h3>Todo</h3>*@
+
+@page "/todo"
+@using TodoList.Models
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h2 class="text-center">Todo (@todos.Count(x=>!x.IsDone))</h2>
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Is done</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                    @foreach (var item in todos)
+                    {
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="@(item.IsDone ? "color: green; text-decoration: line-through" : "color: red")">
+                                        @item.Title
+                                    </div>
+                                </td>
+                                <td>
+                                    <input style="text" type="checkbox" @bind="@item.IsDone"/>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger" @onclick="(()=>DeleteToDo(item))" >Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    }
+                <tfoot>
+
+                </tfoot>
+            </table>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" placeholder="type somth..." @bind="newToDo"/>
+                </div>
+                <div class="col">
+                    <button class="btn btn-success" @onclick="AddToDo">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    private IList<TodoItem> todos = new List<TodoItem>();
+
+    private string newToDo;
+
+    private void AddToDo()
+    {
+        if (!String.IsNullOrWhiteSpace(newToDo))
+        {
+            todos.Add(new TodoItem()
+            {
+                Title = newToDo
+            });
+
+            newToDo = "";
+        }
+    }
+
+    private void DeleteToDo(TodoItem deleted)
+    {
+        todos.Remove(deleted);
+    }
+}
