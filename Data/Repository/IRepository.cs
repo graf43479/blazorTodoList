@@ -10,7 +10,7 @@ namespace TodoList.Data.Repository
     {
         IEnumerable<TodoItem> GetItems();
 
-        void Add(string item);
+        void Add(TodoItem item);
         void Update(TodoItem item);
         void Remove(int id);
     }

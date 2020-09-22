@@ -1,12 +1,14 @@
-﻿@*<h3>Todo</h3>*@
+﻿@inject TodoList.Data.Repository.IRepository repository;
 
 @page "/todo"
+
+@*<h3>Todo</h3>*@
 @using TodoList.Models
 
 <div class="container-fluid">
     <div class="row">
         <div class="col">
-            <h2 class="text-center">Todo (@todos.Count(x=>!x.IsDone))</h2>
+            <h2 class="text-center">Todo (@repository.GetItems().Count(x=>!x.IsDone))</h2>
             <table class="table table-striped">
                 <thead class="table-dark">
                     <tr>
@@ -15,7 +17,7 @@
                         <th scope="col"></th>
                     </tr>
                 </thead>
-                    @foreach (var item in todos)
+                    @foreach (var item in @repository.GetItems())
                     {
                         <tbody>
                             <tr>
@@ -25,10 +27,22 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <input style="text" type="checkbox" @bind="@item.IsDone"/>
+                                    @if (item.IsDone)
+                                    {
+                                        <input type="checkbox" checked="checked" value="@item.IsDone" @onchange="(() => StatusChanger(item))" />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" value="@item.IsDone" @onchange="(() => StatusChanger(item))" />
+                                    }
+
                                 </td>
                                 <td>
-                                    <button class="btn btn-danger" @onclick="(()=>DeleteToDo(item))" >Delete</button>
+                                    <div class="btn-group">
+                                        <button class="btn btn-danger" @onclick="(()=>DeleteToDo(item))">Delete</button>
+                                        @*<button class="btn btn-inf" @onclick="(()=>EditItem(item))">Delete</button>*@
+                                       @*<button class="btn btn-danger" @onclick="(()=>DeleteToDo(item))">Delete</button>*@
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -49,28 +63,37 @@
     </div>
 </div>
 
-
 @code {
+        private IEnumerable<TodoItem> todos =  new List<TodoItem>();
 
-    private IList<TodoItem> todos = new List<TodoItem>();
 
-    private string newToDo;
-
-    private void AddToDo()
-    {
-        if (!String.IsNullOrWhiteSpace(newToDo))
+        protected override void OnInitialized()
         {
-            todos.Add(new TodoItem()
+            todos = repository.GetItems();
+        }
+
+        private string newToDo;
+
+        private void AddToDo()
+        {
+            if (!String.IsNullOrWhiteSpace(newToDo))
             {
-                Title = newToDo
-            });
+                repository.Add(new TodoItem() {Title = newToDo});
+
+            };
 
             newToDo = "";
         }
-    }
+
 
     private void DeleteToDo(TodoItem deleted)
     {
-        todos.Remove(deleted);
+        repository.Remove(deleted.Id);
+    }
+
+    private void StatusChanger(TodoItem itemToChange)
+    {
+        itemToChange.IsDone = !itemToChange.IsDone;
+        repository.Update(itemToChange);
     }
 }

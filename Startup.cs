@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TodoList.Data;
+using TodoList.Data.Repository;
 
 namespace TodoList
 {
@@ -27,12 +28,22 @@ namespace TodoList
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<ApplicationContext>(options =>
-                {
-                    options.UseSqlServer(Configuration.GetConnectionString("TodoDb"));
-                });
+            //services.AddDbContextPool<ApplicationContext>(options =>
+            //    {
+            //        options.UseSqlServer(Configuration.GetConnectionString("TodoDb"));
+            //    });
+
+            var some = Configuration.GetConnectionString("TodoDb");
+
+            services.AddDbContext<ApplicationContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("TodoDb"))); //configurationJson != null ? Configuration.GetConnectionString("DefaultConnection"):Configuration["Migration:Connection"]));
+
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
+            services.AddScoped<IRepository, TodoRepository>();
+
             services.AddSingleton<WeatherForecastService>();
         }
 

@@ -20,11 +20,11 @@ namespace TodoList.Data.Repository
             return _context.TodoItems;
         }
 
-        public void Add(string item)
+        public void Add(TodoItem item)
         {
             _context.Add(new TodoItem()
             {
-                Title = item
+                Title = item.Title
             });
             _context.SaveChanges();
         }
@@ -44,5 +44,6 @@ namespace TodoList.Data.Repository
                 _context.SaveChanges();
             }
         }
+
     }
 }
