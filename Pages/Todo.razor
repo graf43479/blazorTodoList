@@ -23,7 +23,14 @@
                             <tr>
                                 <td>
                                     <div style="@(item.IsDone ? "color: green; text-decoration: line-through" : "color: red")">
-                                        @item.Title
+                                        @if(IsEdited(item.Id))
+                                        {
+                                            <input class="form-control" placeholder="type somth..." @bind="edited.Title"/>
+                                        }
+                                        else
+                                        {
+                                            @item.Title
+                                        }
                                     </div>
                                 </td>
                                 <td>
@@ -40,8 +47,14 @@
                                 <td>
                                     <div class="btn-group">
                                         <button class="btn btn-danger" @onclick="(()=>DeleteToDo(item))">Delete</button>
-                                        @*<button class="btn btn-inf" @onclick="(()=>EditItem(item))">Delete</button>*@
-                                       @*<button class="btn btn-danger" @onclick="(()=>DeleteToDo(item))">Delete</button>*@
+                                            @if(!IsEdited(item.Id))
+                                            { 
+                                                <button class="btn btn-info" @onclick="(()=>EditItem(item))">Edit</button>
+                                            }
+                                            else
+                                            { 
+                                                <button class="btn btn-success" @onclick="(()=>UpdateItem())">Update</button>
+                                            }
                                     </div>
                                 </td>
                             </tr>
@@ -64,31 +77,49 @@
 </div>
 
 @code {
-        private IEnumerable<TodoItem> todos =  new List<TodoItem>();
+    private IEnumerable<TodoItem> todos =  new List<TodoItem>();
 
 
-        protected override void OnInitialized()
+    protected override void OnInitialized()
+    {
+        todos = repository.GetItems();
+    }
+
+    private string newToDo;
+
+    private void AddToDo()
+    {
+        if (!String.IsNullOrWhiteSpace(newToDo))
         {
-            todos = repository.GetItems();
-        }
+            repository.Add(new TodoItem() {Title = newToDo});
+            edited=new TodoItem();
+        };
 
-        private string newToDo;
+        newToDo = "";
+    }
 
-        private void AddToDo()
-        {
-            if (!String.IsNullOrWhiteSpace(newToDo))
-            {
-                repository.Add(new TodoItem() {Title = newToDo});
+    private TodoItem edited = new TodoItem();
 
-            };
+    private void EditItem(TodoItem edited)
+    {
+        this.edited = edited;
+    }
 
-            newToDo = "";
-        }
+    private bool IsEdited(int id)
+    {
+        return edited.Id==id;
+    }
 
+    private void UpdateItem()
+    {
+        repository.Update(edited);
+        edited=new TodoItem();
+    }
 
     private void DeleteToDo(TodoItem deleted)
     {
         repository.Remove(deleted.Id);
+        edited = new TodoItem();
     }
 
     private void StatusChanger(TodoItem itemToChange)
